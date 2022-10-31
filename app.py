@@ -39,11 +39,11 @@ def onboard(phone_number):
         message = "Notice: user with that phone number already exists. For more options, please reply 'HELP'."
         send_to_user(phone_number, message)
     else: 
-        create_new_user(phone_number)
+        create_new_user(phone_number, db)
         message = "Welcome to Kibble Time! If you want to proceed to make an account, please reply 'YES'. If not, reply 'STOP'."
         send_to_user(phone_number, message)
 
-def create_new_user(phone_number):
+def create_new_user(phone_number, db):
     new_user = User(phone=phone_number, status=0)
     db.session.add(new_user)
     db.session.commit()
