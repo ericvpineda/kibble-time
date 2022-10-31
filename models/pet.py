@@ -9,4 +9,4 @@ class Pet(db.Model):
     date_created = db.Column("date_created", db.DateTime, default=datetime.utcnow)
 
     def __repr__(self):
-        return f'<Pet {self._id}>'
+        return f'<Pet: {self.name}, lunch: {self.fed_lunch}, dinner: {self.fed_dinner}>'

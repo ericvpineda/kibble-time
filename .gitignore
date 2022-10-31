@@ -1,4 +1,4 @@
 readme.md
 .venv
 .env
-./instance/tests.db
+instance/test.db
