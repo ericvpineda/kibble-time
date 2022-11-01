@@ -3,7 +3,7 @@ from datetime import datetime
 
 class User(db.Model):
     _id = db.Column("_id", db.Integer, primary_key=True)
-    phone = db.Column("phone", db.Integer, nullable=False)
+    phone = db.Column("phone", db.BigInteger, nullable=False)
     pet_id = db.Column("pet_id", db.Integer, db.ForeignKey("pet._id"))
     status = db.Column("status", db.Integer, nullable=False)
     date_created = db.Column("date_created", db.DateTime, default=datetime.utcnow)

@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, redirect
+from sqlalchemy import create_engine
 from models.shared import db
 from models.pet import Pet
 from models.user import User
@@ -6,12 +7,26 @@ from phonenumbers import parse, is_valid_number
 from twilio.rest import Client
 from twilio.twiml.messaging_response import MessagingResponse
 from os import environ
+from dotenv import load_dotenv
+import pymysql
+
+load_dotenv()
 
 status = {True : "ALREADY FED", False : "NOT FED"}
 
+development_db = 'sqlite:///test.db'
+production_db = "mysql+pymysql://{0}:{1}@{2}:3306/{3}".format(
+    environ['AWS_DB_USERNAME'],
+    environ['AWS_DB_PW'],
+    environ['AWS_DB_HOST'],
+    environ['AWS_DB_NAME']
+)
+
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
+app.app_context().push()
+app.config['SQLALCHEMY_DATABASE_URI'] = production_db
 db.init_app(app)
+db.create_all()
 
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -19,7 +34,7 @@ def index():
     if request.method == "POST":
         phone_raw = request.form['phone']
         phone_obj, phone_clean = clean_phone_number(phone_raw)
-                
+
         if is_valid_number(phone_obj):
             onboard(phone_clean)
             return redirect('/')
@@ -44,7 +59,7 @@ def send_to_user(phone_number, message):
 
 @app.route("/sms", methods=["GET", "POST"])
 def receive_from_user():
-
+    
     name = request.values.get("Body", None).strip()
     body = name.lower()
     resp = MessagingResponse()
@@ -72,7 +87,7 @@ def receive_from_user():
             client.status = 1
             db.session.commit()
             msgs = [
-                f"{new_pet.name} will be happy to have a scheduled meal time. Here are a few commands to check on {new_pet.name}:",
+                f"{new_pet.name} will be happy to have a scheduled meal time!    Here are a the commands to know:",
                 f"Reply 'Status' to check {new_pet.name}'s lunch and dinner status.",
                 f"Reply 'Lunch done' to update {new_pet.name}'s lunch status to ALREADLY FED. And reply 'Lunch reset' to reset status to NOT FED."
             ]
@@ -95,7 +110,7 @@ def receive_from_user():
         elif body == "dinner done":
             pet.fed_dinner = True 
             db.session.commit()
-            content = f"Dinner status is set to: {status[pet.fed_dinner]}. {pet.name} was feed a healthy dinner and is ready for bed!"
+            content = f"Dinner status is set to: {status[pet.fed_dinner]}. {pet.name} was fed a healthy dinner and is ready for bed!"
         elif body == "dinner reset":
             pet.fed_dinner = False 
             db.session.commit()
@@ -121,24 +136,32 @@ def onboard(phone_number):
         message = "Welcome to Kibble Time! To proceed to make an account, please reply 'YES'. If not, reply 'STOP'."
         send_to_user(phone_number, message)
 
+def onboard_test(phone_number):
+    db.drop_all()
+    db.create_all()
+    create_new_user(phone_number)
+    print(User.query.all())
+
+def create_new_user(phone_number):
+    new_user = User(phone=phone_number, status=0)
+    db.session.add(new_user)
+    db.session.commit()
+    print(new_user.phone)
+
 def create_new_pet(name):
     new_pet = Pet(name=name)
     db.session.add(new_pet)
     db.session.commit()
     return new_pet
 
-def create_new_user(phone_number):
-    new_user = User(phone=phone_number, status=0)
-    db.session.add(new_user)
-    db.session.commit()
-
 def clean_phone_number(phone_raw):
     phone_obj = parse(phone_raw, None)
     phone_clean = phone_obj.national_number
     return phone_obj, phone_clean
 
+def clean_db():
+    db.drop_all()
+    db.create_all()
 
 if __name__ == "__main__":
-    app.app_context().push()
-    db.create_all()
     app.run(debug=True)
