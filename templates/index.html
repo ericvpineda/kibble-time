@@ -6,9 +6,6 @@
 
 {% block body %}
 
-    <header id="header">
-        <a class="logo" href="">EP</a>
-    </header>
     <section>
 
         <img src="{{url_for('static', filename="img/clouds.png")}}" id="clouds" alt="">
@@ -34,7 +31,7 @@
                 
                 <div class="input-group submission">
                     <span class="input-group-text">+1</span>
-                    <input class="form-control" name="phone" pattern="[0-9]{10}" type="tel" placeholder="Enter phone number" required>
+                    <input class="form-control" name="phone" pattern="[0-9]{10}" type="tel" placeholder="Enter phone number" value="9255491055" required>
                     <div class="invalid-feedback">
                         Enter a valid phone number.
                     </div>
