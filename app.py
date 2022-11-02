@@ -87,7 +87,7 @@ def receive_from_user():
             client.status = 1
             db.session.commit()
             msgs = [
-                f"{new_pet.name} will be happy to have a scheduled meal time!    Here are a the commands to know:",
+                f"{new_pet.name} will be happy to have a scheduled meal time! Here are a the commands to know:",
                 f"Reply 'Status' to check {new_pet.name}'s lunch and dinner status.",
                 f"Reply 'Lunch done' to update {new_pet.name}'s lunch status to ALREADLY FED. And reply 'Lunch reset' to reset status to NOT FED."
             ]

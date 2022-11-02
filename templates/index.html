@@ -1,18 +1,43 @@
 {% extends 'base.html' %}
 
 {% block header %}
+<link rel="stylesheet" href="{{url_for('static', filename="css/style.css")}}">
 {% endblock  %}
 
 {% block body %}
 
-    <h1>Kibble Time</h1>
+    <header id="header">
+        <a class="logo" href="">KT</a>
+    </header>
+    <section>
 
-    <form action="/" method="POST">
+        <img src="{{url_for('static', filename="img/clouds.png")}}" id="clouds" alt="">
+        <img src="{{url_for('static', filename="img/sun.png")}}" id="sun" alt="">
+        <img src="{{url_for('static', filename="img/mountains.png")}}" id="mountains" alt="">
+        <h2 id="text">Kibble Time</h2>
+        <a href="#description" id="explore_btn">Explore</a>
+        <img src="{{url_for('static', filename="img/backyard.png")}}" id="backyard" alt="">
+        <img src="{{url_for('static', filename="img/dog.png")}}" id="dog" alt="">
 
-        <label for="phone">Enter Phone Number:</label>
-        <input name="phone" type="tel" pattern="+1[0-9]{3}-[0-9]{3}-[0-9]{4}" value="+1925-549-1055">
+    </section>
+        <div class="description" id="description">
+            <h2>Paragraph</h2>
+            <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Voluptatibus aliquam laborum iusto sint libero voluptates voluptate repellendus a reprehenderit hic quaerat dolorum quisquam, sit, laboriosam quas nulla optio. Reiciendis, voluptatem.
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Tenetur impedit perferendis, doloribus, error odio atque dolor eos magni esse sint quos incidunt. Ut hic dolor quis, magnam incidunt voluptatibus inventore!
+                Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quidem odit nisi molestias doloribus sed, minus, consequuntur delectus dicta ex possimus dignissimos, ipsa voluptatem. Debitis perspiciatis vel dicta sequi! Omnis, excepturi!
+            </p>
+        </div>
 
-        <button type="submit">Submit!</button>
-    </form>
+<script src="{{url_for('static', filename="js/app.js")}}"></script>
 
 {% endblock  %}
+
+<h1>Kibble Time</h1>
+
+<form action="/" method="POST">
+
+    <label for="phone">Enter Phone Number:</label>
+    <input name="phone" type="tel" pattern="+1[0-9]{3}-[0-9]{3}-[0-9]{4}" value="+1925-549-1055">
+
+    <button type="submit">Submit!</button>
+</form>

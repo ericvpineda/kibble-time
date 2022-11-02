@@ -1,0 +1,134 @@
+@import url('https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900&displkay=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+    scroll-behavior: smooth;
+}
+
+body {
+    min-height: 100vh;
+    background: linear-gradient(#77c1f9, #d5f8e8);
+    overflow-x: hidden;
+}
+
+header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 2rem;
+    display: flex;
+    z-index: 100;
+}
+
+header .logo {
+    color: black;
+    font-weight: 700;
+    text-decoration: none;
+    font-size: 2rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+section::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 2rem;
+    background: linear-gradient(to top, #e77630, transparent);
+    z-index: 100;
+}
+
+section {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    
+    padding: 100px;
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    overflow: hidden;
+}
+
+section img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    pointer-events: none;
+}
+
+
+#sun {
+    height: 15rem;
+    width: 15rem;
+    position:absolute;
+    left: auto;
+}
+
+#dog {
+    height: 10rem;
+    width: 10rem;
+    
+    position:absolute;
+    top: 75%;
+    left: 46%;
+    z-index: 10;
+}
+
+#backyard {
+    z-index: 10;
+}
+
+#text {
+    width: 100%;
+
+    display: flex;
+    justify-content: center;
+    position: absolute;
+    
+    font-size: 3rem;
+    white-space: nowarp;
+    z-index: 100;
+}
+
+#explore_btn {
+    text-decoration: none;
+    
+    margin-top: 5rem;
+    padding: 8px 30px;
+    
+    border-radius: 40px;
+    background-color: white;
+    color: black;
+    font-size: 1.5em;
+    display: inline-block;
+    z-index: 9;
+    transform: translateY(100px);
+}
+
+.description {
+    position: relative;
+    padding: 1.5rem 3rem;
+    background-color: #e77630;
+}
+
+.description h2 {
+    /* font-size: 3.5rem; */
+    margin-bottom: 10px;
+    color: black;
+}
+
+.description p {
+    font-size: 1em;
+    color: black;
+}
