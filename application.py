@@ -22,27 +22,25 @@ production_db = "mysql+pymysql://{0}:{1}@{2}:3306/{3}".format(
     environ['AWS_DB_NAME']
 )
 
-app = Flask(__name__)
-app.app_context().push()
-app.config['SQLALCHEMY_DATABASE_URI'] = production_db
-app.secret_key = environ['FLASH_SECRET']
-db.init_app(app)
+application = Flask(__name__)
+application.app_context().push()
+application.config['SQLALCHEMY_DATABASE_URI'] = production_db
+application.secret_key = environ['FLASH_SECRET']
+db.init_app(application)
 db.create_all()
 
-@app.route("/", methods=["GET", "POST"])
+@application.route("/", methods=["GET", "POST"])
 def index():
 
     if request.method == "POST":
         phone_raw = request.form['phone']
         phone_obj, phone_clean = clean_phone_number(phone_raw)
-        print(phone_clean)
 
         if is_valid_number(phone_obj):
             flash("Success! Please check your text messages for next steps.", "success")
-            # onboard(phone_clean) 
+            onboard(phone_clean) 
 
         else:
-            # Note: Use flash
             flash("Error: Please use a valid US phone number!", "error")
         return redirect('/')
 
@@ -60,7 +58,7 @@ def send_to_user(phone_number, message):
             to=phone_number
     )
 
-@app.route("/sms", methods=["GET", "POST"])
+@application.route("/sms", methods=["GET", "POST"])
 def receive_from_user():
     
     name = request.values.get("Body", None).strip()
@@ -73,7 +71,7 @@ def receive_from_user():
     client = User.query.filter_by(phone=client_phone_number).first()
     pet = None 
     
-    if client != None and client.pet_id != None: 
+    if client and client.pet_id != None: 
         pet = Pet.query.filter_by(_id=client.pet_id).first()
 
     # Note: Need to sanitize message
@@ -123,7 +121,7 @@ def receive_from_user():
 
     else: 
         content = "Thank you for using Kibble Time. Good bye!"
- 
+
     resp.message(content)
     return str(resp)
 
@@ -138,12 +136,6 @@ def onboard(phone_number):
     else: 
         message = "Welcome to Kibble Time! To proceed to make an account, please reply 'YES'. If not, reply 'STOP'."
         send_to_user(phone_number, message)
-
-def onboard_test(phone_number):
-    db.drop_all()
-    db.create_all()
-    create_new_user(phone_number)
-    print(User.query.all())
 
 def create_new_user(phone_number):
     new_user = User(phone=phone_number, status=0)
@@ -164,9 +156,17 @@ def clean_phone_number(phone_raw):
         return phone_obj, phone_clean   
     return None, None
 
+# -- Utility Functions -- 
+
 def clean_db():
     db.drop_all()
     db.create_all()
 
+def onboard_test(phone_number):
+    db.drop_all()
+    db.create_all()
+    create_new_user(phone_number)
+    print(User.query.all())
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    application.run(debug=True, port=8000)
