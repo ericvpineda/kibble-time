@@ -35,6 +35,7 @@ def index():
     if request.method == "POST":
         phone_raw = request.form['phone']
         phone_obj, phone_clean = clean_phone_number(phone_raw)
+        print(phone_clean)
 
         if is_valid_number(phone_obj):
             flash("Success! Please check your text messages for next steps.", "success")
