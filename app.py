@@ -37,12 +37,12 @@ def index():
         phone_obj, phone_clean = clean_phone_number(phone_raw)
 
         if is_valid_number(phone_obj):
-            flash("Sign up successful! Please check your text messages for next steps.")
+            flash("Success! Please check your text messages for next steps.", "success")
             # onboard(phone_clean) 
 
         else:
             # Note: Use flash
-            flash("ERROR: Please use a valid US phone number!")
+            flash("Error: Please use a valid US phone number!", "error")
         return redirect('/')
 
     return render_template('index.html')

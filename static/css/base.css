@@ -13,11 +13,6 @@
 
     font-family: 'Poppins', sans-serif;
 
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  
-    z-index: 10000;
     overflow: hidden;    
 
     font-weight: bold;
