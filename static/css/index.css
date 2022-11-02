@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900&displkay=swap');
-
 * {
     margin: 0;
     padding: 0;
@@ -67,6 +65,12 @@ section img {
     pointer-events: none;
 }
 
+form {
+    font-weight: bold;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
 
 #sun {
     height: 15rem;
@@ -118,17 +122,31 @@ section img {
 
 .description {
     position: relative;
-    padding: 1.5rem 3rem;
+    padding: 1rem 2rem;
     background-color: #e77630;
 }
 
+.description-inner {
+
+    padding: 2rem 3rem;
+
+    border-radius: 10px;
+
+    background-color: #f2f2f2;
+    box-shadow: inset 0 -3em 3em rgba(0, 0, 0, 0.1),
+    0.3em 0.3em 1em rgba(0, 0, 0, 0.3);
+}
+
 .description h2 {
-    /* font-size: 3.5rem; */
-    margin-bottom: 10px;
+    margin-bottom: 2rem;
     color: black;
 }
 
 .description p {
     font-size: 1em;
     color: black;
+}
+
+.submission {
+    max-width: 15rem;
 }

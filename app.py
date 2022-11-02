@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, flash
 from sqlalchemy import create_engine
 from models.shared import db
 from models.pet import Pet
@@ -25,6 +25,7 @@ production_db = "mysql+pymysql://{0}:{1}@{2}:3306/{3}".format(
 app = Flask(__name__)
 app.app_context().push()
 app.config['SQLALCHEMY_DATABASE_URI'] = production_db
+app.secret_key = environ['FLASH_SECRET']
 db.init_app(app)
 db.create_all()
 
@@ -36,12 +37,13 @@ def index():
         phone_obj, phone_clean = clean_phone_number(phone_raw)
 
         if is_valid_number(phone_obj):
-            onboard(phone_clean)
-            return redirect('/')
+            flash("Sign up successful! Please check your text messages for next steps.")
+            # onboard(phone_clean) 
 
         else:
             # Note: Use flash
-            print("ERROR: Invalid number")
+            flash("ERROR: Please use a valid US phone number!")
+        return redirect('/')
 
     return render_template('index.html')
 
@@ -155,9 +157,11 @@ def create_new_pet(name):
     return new_pet
 
 def clean_phone_number(phone_raw):
-    phone_obj = parse(phone_raw, None)
-    phone_clean = phone_obj.national_number
-    return phone_obj, phone_clean
+    if phone_raw:
+        phone_obj = parse("+1" + phone_raw, None)
+        phone_clean = phone_obj.national_number
+        return phone_obj, phone_clean   
+    return None, None
 
 def clean_db():
     db.drop_all()

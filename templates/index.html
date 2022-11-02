@@ -1,13 +1,13 @@
 {% extends 'base.html' %}
 
 {% block header %}
-<link rel="stylesheet" href="{{url_for('static', filename="css/style.css")}}">
+<link rel="stylesheet" href="{{url_for('static', filename="css/index.css")}}">
 {% endblock  %}
 
 {% block body %}
 
     <header id="header">
-        <a class="logo" href="">KT</a>
+        <a class="logo" href="">EP</a>
     </header>
     <section>
 
@@ -20,24 +20,35 @@
         <img src="{{url_for('static', filename="img/dog.png")}}" id="dog" alt="">
 
     </section>
-        <div class="description" id="description">
-            <h2>Paragraph</h2>
-            <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Voluptatibus aliquam laborum iusto sint libero voluptates voluptate repellendus a reprehenderit hic quaerat dolorum quisquam, sit, laboriosam quas nulla optio. Reiciendis, voluptatem.
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Tenetur impedit perferendis, doloribus, error odio atque dolor eos magni esse sint quos incidunt. Ut hic dolor quis, magnam incidunt voluptatibus inventore!
-                Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quidem odit nisi molestias doloribus sed, minus, consequuntur delectus dicta ex possimus dignissimos, ipsa voluptatem. Debitis perspiciatis vel dicta sequi! Omnis, excepturi!
+
+    <div class="description" id="description">
+        <div class="description-inner">
+            <h2 class="text-center">A happy dog is a happy owner.</h2>
+            <p>
+                It can be difficult to remember if your pup ate lunch or dinner. And if you live with family or house mates, it can take long
+                to receive a reply that your dog has been fed. Poor puppy&#128549;.
             </p>
+            <p>With Kibble Time, an SMS based application, you can check and update your dog's meal status in an instant!</p>
+            <form action="/" method="POST" class="needs-validation" novalidate>
+                <label class="form-label" for="phone">Enter phone number:</label>
+                
+                <div class="input-group submission">
+                    <span class="input-group-text">+1</span>
+                    <input class="form-control" name="phone" pattern="[0-9]{10}" type="tel" placeholder="Enter phone number" required>
+                    <div class="invalid-feedback">
+                        Enter a valid phone number.
+                    </div>
+                </div>
+                    
+                
+                <button class="btn btn-success mt-3" type="submit">Sign up!</button>
+            </form>
         </div>
+    </div>
 
 <script src="{{url_for('static', filename="js/app.js")}}"></script>
+<script src="{{url_for('static', filename="js/validateForm.js")}}"></script>
 
 {% endblock  %}
 
-<h1>Kibble Time</h1>
 
-<form action="/" method="POST">
-
-    <label for="phone">Enter Phone Number:</label>
-    <input name="phone" type="tel" pattern="+1[0-9]{3}-[0-9]{3}-[0-9]{4}" value="+1925-549-1055">
-
-    <button type="submit">Submit!</button>
-</form>
