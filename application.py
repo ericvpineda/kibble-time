@@ -12,12 +12,16 @@ import pymysql
 from datetime import datetime
 from jinja2 import Markup
 
+# Load environmental variables
 load_dotenv()
 
+# Global Variables
 status = {True : "ALREADY FED", False : "NOT FED"}
 today_date = datetime.today().strftime("%d/%m/%Y")
 
+# Development databse path
 development_db = 'sqlite:///test.db'
+# Production database path
 production_db = "mysql+pymysql://{0}:{1}@{2}:3306/{3}".format(
     environ['AWS_DB_USERNAME'],
     environ['AWS_DB_PW'],
@@ -25,17 +29,22 @@ production_db = "mysql+pymysql://{0}:{1}@{2}:3306/{3}".format(
     environ['AWS_DB_NAME']
 )
 
+# Flask initialization 
 application = Flask(__name__)
 application.app_context().push()
 application.config['RECAPTCHA_SITE_KEY'] = environ['reCAPTCHA_SITE_KEY']
 application.config['RECAPTCHA_SECRET_KEY'] = environ['reCAPTCHA_SECRET']
 application.config['SQLALCHEMY_DATABASE_URI'] = production_db
 application.secret_key = environ['FLASH_SECRET']
+
+# Initialize models
 db.init_app(application)
 db.create_all()
 
+# Initialize recaptcha for embedded use
 recaptcha = ReCaptcha(app=application)
 
+# Route: Index page
 @application.route("/", methods=["GET", "POST"])
 def index():
 
@@ -58,18 +67,7 @@ def index():
 
     return render_template('index.html')
 
-def send_to_user(phone_number, message):
-
-    account_sid = environ['TWILIO_ACCOUNT_SID']
-    auth_token = environ['TWILIO_AUTH_TOKEN']
-
-    client = Client(account_sid, auth_token)
-    message = client.messages.create(
-            body=message,
-            from_='+13609269872',
-            to=phone_number
-    )
-
+# Route: Post route to receive messaeges from user to server
 @application.route("/sms", methods=["GET", "POST"])
 def receive_from_user():
     
@@ -81,20 +79,21 @@ def receive_from_user():
         body = name.lower()
         resp = MessagingResponse()
 
-        # Get user info 
+        # Get user phone number
         client_phone_raw = request.values.get("From")
         _, client_phone_number = clean_phone_number(client_phone_raw)
         client = User.query.filter_by(phone=client_phone_number).first()
         pet = None 
         
+        # Get user pet if applicable
         if client and client.pet_id != None: 
             pet = Pet.query.filter_by(_id=client.pet_id).first()
 
-        # Note: Need to sanitize message
+        # Condtional for user initialization
         if body == "yes":
             create_new_user(client_phone_number)
             content = "Great, you are confirmed! Please enter your pet's NAME whom you want to track their meal habits."
-        # Status 0 : set client pet name
+        # Status 0 : Set client pet name
         elif client.status == 0:
             if len(body) > 20: 
                 content = "Sorry, please limit name length to 20 characters."
@@ -111,7 +110,7 @@ def receive_from_user():
                 for msg in msgs:
                     send_to_user(client_phone_number, msg)
                 content = f"Reply 'Dinner done' to update {new_pet.name}'s dinner status to ALREADLY FED. And reply 'Dinner reset' to reset status to NOT FED."
-        # Status 1 : status check and updates
+        # Status 1 : Status check and updates
         elif client.status == 1:
 
             if compare_date(pet.last_fed) == False: 
@@ -153,6 +152,20 @@ def receive_from_user():
 
     return render_template('index.html')
 
+# Function to send Twilio SMS requests 
+def send_to_user(phone_number, message):
+
+    account_sid = environ['TWILIO_ACCOUNT_SID']
+    auth_token = environ['TWILIO_AUTH_TOKEN']
+
+    client = Client(account_sid, auth_token)
+    message = client.messages.create(
+            body=message,
+            from_='+13609269872',
+            to=phone_number
+    )
+
+# Function to send initial message to user for onboarding
 def onboard(phone_number):
 
     user_exists = User.query.filter_by(phone=phone_number).first()
@@ -164,6 +177,8 @@ def onboard(phone_number):
     else: 
         message = "Welcome to Kibble Time! To proceed to make an account, please reply 'YES'. If not, reply 'STOP'."
         send_to_user(phone_number, message)
+
+# -- Helper Functions --
 
 def create_new_user(phone_number):
     new_user = User(phone=phone_number, status=0)
