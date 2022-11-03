@@ -129,7 +129,7 @@ def receive_from_user():
         resp.message(content)
         return str(resp)
 
-    return "Error: Page not found."
+    return render_template('index.html')
 
 def onboard(phone_number):
 
