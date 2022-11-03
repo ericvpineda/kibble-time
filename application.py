@@ -9,10 +9,12 @@ from twilio.twiml.messaging_response import MessagingResponse
 from os import environ
 from dotenv import load_dotenv
 import pymysql
+from datetime import datetime
 
 load_dotenv()
 
 status = {True : "ALREADY FED", False : "NOT FED"}
+today_date = datetime.today().strftime("%d/%m/%Y")
 
 development_db = 'sqlite:///test.db'
 production_db = "mysql+pymysql://{0}:{1}@{2}:3306/{3}".format(
@@ -52,11 +54,11 @@ def send_to_user(phone_number, message):
     auth_token = environ['TWILIO_AUTH_TOKEN']
 
     client = Client(account_sid, auth_token)
-    message = client.messages.create(
-            body=message,
-            from_='+13609269872',
-            to=phone_number
-    )
+    # message = client.messages.create(
+    #         body=message,
+    #         from_='+13609269872',
+    #         to=phone_number
+    # )
 
 @application.route("/sms", methods=["GET", "POST"])
 def receive_from_user():
@@ -102,22 +104,32 @@ def receive_from_user():
         # Status 1 : status check and updates
         elif client.status == 1:
 
+            if compare_date(pet.last_fed) == False: 
+                pet.fed_lunch = False
+                pet.fed_dinner = False
+                pet.last_fed_saved = pet.last_fed
+                db.session.commit()
+
             if body == "status":
                 content = f"{pet.name}'s lunch status: {status[pet.fed_lunch]}, dinner status: {status[pet.fed_dinner]}"
             elif body == "lunch done":
                 pet.fed_lunch = True 
+                pet.last_fed = today_date
                 db.session.commit()
                 content = f"Lunch status is set to: {status[pet.fed_lunch]}. {pet.name} had a yummy lunch!"
             elif body == "lunch reset":
                 pet.fed_lunch = False 
+                pet.last_fed = pet.last_fed_saved
                 db.session.commit()
                 content = f"Lunch status is set to: {status[pet.fed_lunch]}. {pet.name} will need to be fed lunch."
             elif body == "dinner done":
                 pet.fed_dinner = True 
+                pet.last_fed = today_date
                 db.session.commit()
                 content = f"Dinner status is set to: {status[pet.fed_dinner]}. {pet.name} was fed a healthy dinner and is ready for bed!"
             elif body == "dinner reset":
                 pet.fed_dinner = False 
+                pet.last_fed = pet.last_fed_saved
                 db.session.commit()
                 content = f"Dinner status is set to: {status[pet.fed_dinner]}. {pet.name} will need to be fed dinner."
             else:
@@ -167,6 +179,11 @@ def clean_db():
     db.session.commit()
     db.drop_all()
     db.create_all()
+
+def compare_date(date):
+    previous_date = date.strftime("%d/%m/%Y")
+    current_date = today_date
+    return previous_date == current_date
 
 def onboard_test(phone_number):
     db.drop_all()
