@@ -29,13 +29,12 @@ application = Flask(__name__)
 application.app_context().push()
 application.config['RECAPTCHA_SITE_KEY'] = environ['reCAPTCHA_SITE_KEY']
 application.config['RECAPTCHA_SECRET_KEY'] = environ['reCAPTCHA_SECRET']
-recaptcha = ReCaptcha(app=application)
-
 application.config['SQLALCHEMY_DATABASE_URI'] = production_db
 application.secret_key = environ['FLASH_SECRET']
 db.init_app(application)
 db.create_all()
 
+recaptcha = ReCaptcha(app=application)
 
 @application.route("/", methods=["GET", "POST"])
 def index():
