@@ -1,5 +1,4 @@
 from flask import Flask, render_template, request, redirect, flash
-from sqlalchemy import create_engine
 from models.shared import db
 from models.pet import Pet
 from models.user import User
