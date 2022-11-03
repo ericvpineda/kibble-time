@@ -34,7 +34,7 @@ def index():
 
     if request.method == "POST":
         phone_raw = request.form['phone']
-        phone_obj, phone_clean = clean_phone_number(phone_raw)
+        phone_obj, phone_clean = clean_phone_number("+1" + phone_raw)
 
         if is_valid_number(phone_obj):
             flash("Success! Please check your text messages for next steps.", "success")
@@ -61,69 +61,76 @@ def send_to_user(phone_number, message):
 @application.route("/sms", methods=["GET", "POST"])
 def receive_from_user():
     
-    name = request.values.get("Body", None).strip()
-    body = name.lower()
-    resp = MessagingResponse()
+    data = request.values.get("Body", None)
 
-    # Get user info 
-    client_phone_raw = request.values.get("From")
-    _, client_phone_number = clean_phone_number(client_phone_raw)
-    client = User.query.filter_by(phone=client_phone_number).first()
-    pet = None 
-    
-    if client and client.pet_id != None: 
-        pet = Pet.query.filter_by(_id=client.pet_id).first()
+    if data: 
 
-    # Note: Need to sanitize message
-    if body == "yes":
-        create_new_user(client_phone_number)
-        content = "Great, you are confirmed! Please enter your pet's NAME whom you want to track their meal habits."
-    # Status 0 : set client pet name
-    elif client.status == 0:
-        if len(body) > 20: 
-            content = "Sorry, please limit name length to 20 characters."
-        else:
-            new_pet = create_new_pet(name)
-            client.pet_id = new_pet._id
-            client.status = 1
-            db.session.commit()
-            msgs = [
-                f"{new_pet.name} will be happy to have a scheduled meal time! Here are a the commands to know:",
-                f"Reply 'Status' to check {new_pet.name}'s lunch and dinner status.",
-                f"Reply 'Lunch done' to update {new_pet.name}'s lunch status to ALREADLY FED. And reply 'Lunch reset' to reset status to NOT FED."
-            ]
-            for msg in msgs:
-                send_to_user(client_phone_number, msg)
-            content = f"Reply 'Dinner done' to update {new_pet.name}'s dinner status to ALREADLY FED. And reply 'Dinner reset' to reset status to NOT FED."
-    # Status 1 : status check and updates
-    elif client.status == 1:
+        name = data.strip()
+        body = name.lower()
+        resp = MessagingResponse()
 
-        if body == "status":
-            content = f"{pet.name}'s lunch status: {status[pet.fed_lunch]}, dinner status: {status[pet.fed_dinner]}"
-        elif body == "lunch done":
-            pet.fed_lunch = True 
-            db.session.commit()
-            content = f"Lunch status is set to: {status[pet.fed_lunch]}. {pet.name} had a yummy lunch!"
-        elif body == "lunch reset":
-            pet.fed_lunch = False 
-            db.session.commit()
-            content = f"Lunch status is set to: {status[pet.fed_lunch]}. {pet.name} will need to be fed lunch."
-        elif body == "dinner done":
-            pet.fed_dinner = True 
-            db.session.commit()
-            content = f"Dinner status is set to: {status[pet.fed_dinner]}. {pet.name} was fed a healthy dinner and is ready for bed!"
-        elif body == "dinner reset":
-            pet.fed_dinner = False 
-            db.session.commit()
-            content = f"Dinner status is set to: {status[pet.fed_dinner]}. {pet.name} will need to be fed dinner."
-        else:
-            content = "Sorry, there is no command with that message. Please try again."
+        # Get user info 
+        client_phone_raw = request.values.get("From")
+        print(client_phone_raw)
+        _, client_phone_number = clean_phone_number(client_phone_raw)
+        client = User.query.filter_by(phone=client_phone_number).first()
+        pet = None 
+        
+        if client and client.pet_id != None: 
+            pet = Pet.query.filter_by(_id=client.pet_id).first()
 
-    else: 
-        content = "Thank you for using Kibble Time. Good bye!"
+        # Note: Need to sanitize message
+        if body == "yes":
+            create_new_user(client_phone_number)
+            content = "Great, you are confirmed! Please enter your pet's NAME whom you want to track their meal habits."
+        # Status 0 : set client pet name
+        elif client.status == 0:
+            if len(body) > 20: 
+                content = "Sorry, please limit name length to 20 characters."
+            else:
+                new_pet = create_new_pet(name)
+                client.pet_id = new_pet._id
+                client.status = 1
+                db.session.commit()
+                msgs = [
+                    f"{new_pet.name} will be happy to have a scheduled meal time! Here are a the commands to know:",
+                    f"Reply 'Status' to check {new_pet.name}'s lunch and dinner status.",
+                    f"Reply 'Lunch done' to update {new_pet.name}'s lunch status to ALREADLY FED. And reply 'Lunch reset' to reset status to NOT FED."
+                ]
+                for msg in msgs:
+                    send_to_user(client_phone_number, msg)
+                content = f"Reply 'Dinner done' to update {new_pet.name}'s dinner status to ALREADLY FED. And reply 'Dinner reset' to reset status to NOT FED."
+        # Status 1 : status check and updates
+        elif client.status == 1:
 
-    resp.message(content)
-    return str(resp)
+            if body == "status":
+                content = f"{pet.name}'s lunch status: {status[pet.fed_lunch]}, dinner status: {status[pet.fed_dinner]}"
+            elif body == "lunch done":
+                pet.fed_lunch = True 
+                db.session.commit()
+                content = f"Lunch status is set to: {status[pet.fed_lunch]}. {pet.name} had a yummy lunch!"
+            elif body == "lunch reset":
+                pet.fed_lunch = False 
+                db.session.commit()
+                content = f"Lunch status is set to: {status[pet.fed_lunch]}. {pet.name} will need to be fed lunch."
+            elif body == "dinner done":
+                pet.fed_dinner = True 
+                db.session.commit()
+                content = f"Dinner status is set to: {status[pet.fed_dinner]}. {pet.name} was fed a healthy dinner and is ready for bed!"
+            elif body == "dinner reset":
+                pet.fed_dinner = False 
+                db.session.commit()
+                content = f"Dinner status is set to: {status[pet.fed_dinner]}. {pet.name} will need to be fed dinner."
+            else:
+                content = "Sorry, there is no command with that message. Please try again."
+
+        else: 
+            content = "Thank you for using Kibble Time. Good bye!"
+
+        resp.message(content)
+        return str(resp)
+
+    return "Error: Page not found."
 
 def onboard(phone_number):
 
@@ -151,7 +158,7 @@ def create_new_pet(name):
 
 def clean_phone_number(phone_raw):
     if phone_raw:
-        phone_obj = parse("+1" + phone_raw, None)
+        phone_obj = parse(phone_raw, None)
         phone_clean = phone_obj.national_number
         return phone_obj, phone_clean   
     return None, None
