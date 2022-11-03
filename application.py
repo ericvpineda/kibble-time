@@ -52,11 +52,11 @@ def send_to_user(phone_number, message):
     auth_token = environ['TWILIO_AUTH_TOKEN']
 
     client = Client(account_sid, auth_token)
-    message = client.messages.create(
-            body=message,
-            from_='+13609269872',
-            to=phone_number
-    )
+    # message = client.messages.create(
+    #         body=message,
+    #         from_='+13609269872',
+    #         to=phone_number
+    # )
 
 @application.route("/sms", methods=["GET", "POST"])
 def receive_from_user():
