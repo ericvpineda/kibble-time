@@ -3,7 +3,7 @@
 ![Kibble Time Image](./static/img/home_page.jpg)
 
 ## Description 
-- React app that serves react-redux commands on a single webpage. 
+- Flask app that serves SMS requests via phone messaging.
 - Website: [http://kibbletime-env.eba-m7k7mg3k.us-west-2.elasticbeanstalk.com/](http://kibbletime-env.eba-m7k7mg3k.us-west-2.elasticbeanstalk.com/)
 
 ## Functionality 
