@@ -58,6 +58,11 @@ form {
     width: 15rem;
     position:absolute;
     left: auto;
+    z-index: 10;
+}
+
+#clouds {
+    z-index: 100;
 }
 
 #dog {
