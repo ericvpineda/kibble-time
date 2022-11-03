@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, redirect, flash
+from flask_recaptcha import ReCaptcha
 from models.shared import db
 from models.pet import Pet
 from models.user import User
@@ -9,6 +10,7 @@ from os import environ
 from dotenv import load_dotenv
 import pymysql
 from datetime import datetime
+ 
 
 load_dotenv()
 
@@ -25,10 +27,15 @@ production_db = "mysql+pymysql://{0}:{1}@{2}:3306/{3}".format(
 
 application = Flask(__name__)
 application.app_context().push()
+application.config['RECAPTCHA_SITE_KEY'] = environ['reCAPTCHA_SITE_KEY']
+application.config['RECAPTCHA_SECRET_KEY'] = environ['reCAPTCHA_SECRET']
+recaptcha = ReCaptcha(app=application)
+
 application.config['SQLALCHEMY_DATABASE_URI'] = production_db
 application.secret_key = environ['FLASH_SECRET']
 db.init_app(application)
 db.create_all()
+
 
 @application.route("/", methods=["GET", "POST"])
 def index():
@@ -37,12 +44,17 @@ def index():
         phone_raw = request.form['phone']
         phone_obj, phone_clean = clean_phone_number("+1" + phone_raw)
 
-        if is_valid_number(phone_obj):
+        recaptcha_verified = recaptcha.verify()
+
+        if recaptcha_verified and is_valid_number(phone_obj):
             flash("Success! Please check your text messages for next steps.", "success")
-            onboard(phone_clean) 
+            # onboard(phone_clean) 
+        
+        elif recaptcha_verified == False:
+            flash("Error: Please complete the recaptcha!", "error")
 
         else:
-            flash("Error: Please use a valid US phone number!", "error")
+            flash("Error: Please enter a valid US phone number!", "error")
         return redirect('/')
 
     return render_template('index.html')

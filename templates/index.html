@@ -29,7 +29,7 @@
             <form action="/" method="POST" class="needs-validation" novalidate>
                 <label class="form-label" for="phone">Enter phone number:</label>
                 
-                <div class="input-group submission">
+                <div class="input-group submission mb-2">
                     <span class="input-group-text">+1</span>
                     <input class="form-control" name="phone" pattern="[' ']*[(]?[0-9]{3}[)]?[' ']*[-]?[' ']*[0-9]{3}[' ']*[-]?[' ']*[0-9]{4}[' ']*" type="tel" placeholder="Enter phone number" required>
                     <div class="invalid-feedback">
@@ -37,8 +37,9 @@
                     </div>
                 </div>
                     
+                {{ recaptcha }}
                 
-                <button class="btn btn-success mt-3" type="submit">Sign up!</button>
+                <button class="btn btn-success mt-2" type="submit">Sign up!</button>
             </form>
         </div>
     </div>
