@@ -22,5 +22,5 @@
 - Frontend Framework [Bootstrap 5.2](https://getbootstrap.com/docs/5.2/getting-started/introduction/)
 - SQL Database [Amazon RDS](https://aws.amazon.com/rds/)
 - SQL ORM [SQLAlchemy](https://www.sqlalchemy.org/)
-- SMS Comunnication API [Twilio](https://www.twilio.com/)
+- SMS Communication [Twilio](https://www.twilio.com/)
 - Hosted on [AWS Elastic Beanstalk](https://docs.aws.amazon.com/elastic-beanstalk/index.html)
