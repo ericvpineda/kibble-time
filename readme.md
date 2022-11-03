@@ -3,7 +3,7 @@
 ![Kibble Time Image](./static/img/home_page.jpg)
 
 ## Description 
-- Flask app that serves SMS requests via phone messaging.
+- Flask app that serves SMS requests.
 - Website: [http://kibbletime-env.eba-m7k7mg3k.us-west-2.elasticbeanstalk.com/](http://kibbletime-env.eba-m7k7mg3k.us-west-2.elasticbeanstalk.com/)
 
 ## Functionality 
