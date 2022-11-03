@@ -48,7 +48,7 @@ def index():
 
         if recaptcha_verified and is_valid_number(phone_obj):
             flash("Success! Please check your text messages for next steps.", "success")
-            # onboard(phone_clean) 
+            onboard(phone_clean) 
         
         elif recaptcha_verified == False:
             flash("Error: Please complete the recaptcha!", "error")
