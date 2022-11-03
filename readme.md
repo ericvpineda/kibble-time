@@ -16,6 +16,7 @@
 
 ## Features:
 - Automatic reset of lunch and dinner status after every 24 hour interval.  
+- Added reCaptcha to prevent spam and website abuse
 
 ## API  
 - Backend API [Flask](https://flask.palletsprojects.com/en/2.2.x/)
