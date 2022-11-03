@@ -71,7 +71,6 @@ def receive_from_user():
 
         # Get user info 
         client_phone_raw = request.values.get("From")
-        print(client_phone_raw)
         _, client_phone_number = clean_phone_number(client_phone_raw)
         client = User.query.filter_by(phone=client_phone_number).first()
         pet = None 
@@ -148,7 +147,6 @@ def create_new_user(phone_number):
     new_user = User(phone=phone_number, status=0)
     db.session.add(new_user)
     db.session.commit()
-    print(new_user.phone)
 
 def create_new_pet(name):
     new_pet = Pet(name=name)
@@ -166,6 +164,7 @@ def clean_phone_number(phone_raw):
 # -- Utility Functions -- 
 
 def clean_db():
+    db.session.commit()
     db.drop_all()
     db.create_all()
 
@@ -173,7 +172,6 @@ def onboard_test(phone_number):
     db.drop_all()
     db.create_all()
     create_new_user(phone_number)
-    print(User.query.all())
 
 if __name__ == "__main__":
     application.run(debug=True, port=8000)
